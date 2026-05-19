@@ -1,0 +1,1 @@
+#define assert(x) if (!(x)) { *(volatile int*)0 = 0; } 
