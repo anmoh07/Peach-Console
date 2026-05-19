@@ -8,6 +8,7 @@
 - Stack grows downward
 - Fixed-width instruction encoding
 - FPGA-oriented architecture
+- Instructions specific to 2D game needs
 
 ---
 
