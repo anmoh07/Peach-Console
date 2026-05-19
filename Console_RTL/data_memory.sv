@@ -1,0 +1,41 @@
+module data_mem
+(
+
+	input logic clk,
+	input logic write_enable,
+	input logic read_enable,
+	input logic [15:0] write_value, 
+	input logic [15:0] index, //doubles as alu_result
+	input logic reg_write_enable_MEM,
+	input logic [3:0] rd_MEM,
+
+	
+	output logic [15:0] result_value,
+	output logic reg_write_enable_WB,
+	output logic [3:0] rd_WB
+
+);
+
+logic [15:0] memory [127:0]; //temporary amount
+
+
+always_ff @(posedge clk)
+begin
+
+	result_value <= ((read_enable) ? memory[index[7:1]] : index);
+	
+	if (write_enable)
+	begin
+
+		memory[index[7:1]] <= write_value;
+
+	end
+
+	reg_write_enable_WB <= reg_write_enable_MEM;
+	rd_WB <= rd_MEM;
+	
+	
+end
+
+
+endmodule

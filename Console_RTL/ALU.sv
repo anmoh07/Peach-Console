@@ -1,0 +1,56 @@
+module ALU
+(
+
+	input logic [2:0] alu_op, //alu_op
+	input logic [15:0] value_1, //rs1
+	input logic [15:0] value_2, //rs2
+	
+	output logic [15:0] result
+);
+
+typedef enum logic [2:0]
+{
+
+	ADD,
+	SUB,
+	AND,
+	OR,	
+	XOR,
+	SHL,
+	SHR,
+	MUL
+		
+} op_t;
+
+
+always_comb
+begin
+
+	op_t op;
+	op = op_t'(alu_op);
+
+	case (op)
+
+	ADD: result = value_1 + value_2;
+
+	SUB: result = value_1 - value_2;
+
+	AND: result = value_1 & value_2;
+
+	OR: result = value_1 | value_2;
+
+	XOR: result = value_1 ^ value_2;
+
+	SHL: result = value_1 << value_2[3:0];
+
+	SHR: result = value_1 >> value_2[3:0];
+
+	MUL: result = value_1 * value_2;
+
+	default: result = 16'h0000;
+
+	endcase
+
+end
+
+endmodule

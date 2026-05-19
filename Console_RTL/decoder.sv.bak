@@ -1,0 +1,19 @@
+module decoder
+(
+
+	input logic [15:0] instruction_ID,
+	
+	output logic [3:0] opcode,
+	output logic [3:0] field_a, //rd or off8[7:4]
+	output logic [3:0] field_b, //rs1 or rs or funct4
+	output logic [3:0] field_c, //rs2 or imm4 or off4 off8[3:0]
+
+);
+
+assign opcode = instruction_ID[15:12];
+assign field_a = instruction_ID[11:8];
+assign field_b = instruction_ID[7:4]; 
+assign field_c = instruction_ID[3:0];
+
+
+endmodule

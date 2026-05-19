@@ -1,0 +1,34 @@
+module IF_ID_register
+(
+
+	input logic clk,
+	input logic reset,
+	//input logic flush,
+	//input logic stall,
+	input logic [15:0] instruction_IF,
+
+	output logic [15:0] instruction_ID
+
+
+);
+
+//register
+always_ff @(posedge clk)
+begin
+
+	if (reset)
+	begin
+		
+		instruction_ID <= 16'b1111010000000000; //Nop instruction
+	
+	end
+	else
+	begin
+
+		instruction_ID <= instruction_IF;
+
+	end
+
+end
+
+endmodule

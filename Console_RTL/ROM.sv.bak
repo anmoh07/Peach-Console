@@ -1,0 +1,38 @@
+module ROM 
+(
+
+	input logic clk,
+	input logic [15:0] address, 
+	output logic [15:0] instruction 
+
+); 
+
+logic [15:0] memory [127:0]; 
+
+//ILLEGAL FOR SYNTHESIS
+initial
+begin
+
+memory[0] = 16'b1000000110010011;  
+memory[1] = 16'b1000001001111110;
+memory[2] = 16'b0000001100010010;
+memory[7] = 16'b0001010000010010;
+memory[8] = 16'b0010010100010010;
+memory[9] = 16'b0011011000010010;
+memory[10] = 16'b0100011100010010;
+memory[11] = 16'b0101100000010010;
+memory[12] = 16'b0110100100010010;
+
+end
+
+//Reads 
+
+always_ff @(posedge clk)
+begin 
+
+	instruction <= memory[address[7:1]];
+
+end
+
+
+endmodule
