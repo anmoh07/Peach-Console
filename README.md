@@ -15,26 +15,7 @@ Peach Console is a custom FPGA-targeted 16-bit game console architecture featuri
 
 ## Current Progress
 
-Implemented:
-- Instruction decoder
-- Control unit
-- Register file
-- ALU
-- Branch unit
-- Stack operations
-- CALL/RET support
-- Memory subsystem
-- RNG unit
-- CPU execution loop
-
-In progress:
-- Assembler
-- Compiler frontend
-- VGA graphics output
-- Controller input
-- MMIO peripherals
-- Fixed-function graphics accelerator
-- RTL/FPGA implementation
+- See "Roadmap.md"
 
 ## Architecture Goals
 
