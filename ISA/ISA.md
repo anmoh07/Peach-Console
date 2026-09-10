@@ -145,7 +145,7 @@ opcode   rs1     rs2     off4
 ## Branch Semantics
 
 ```text
-PC = PC + 2 + sign_extend(off4)
+PC = PC + 2 + (sign_extend(off4) << 1)
 ```
 
 if the condition is true.
@@ -232,7 +232,7 @@ SP = SP + 2
 
 ```text
 off8 = {off8[7:4], off8[3:0]}
-PC = PC + 2 + sign_extend(off8)
+PC = PC + 2 + (sign_extend(off8) << 1)
 ```
 
 ---
