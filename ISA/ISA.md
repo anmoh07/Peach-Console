@@ -167,7 +167,7 @@ if the condition is true.
 
 | funct4 | Instruction | Semantics |
 |---|---|---|
-| 0000 | JMP | `PC = rd` |
+| 0000 | JMP | `PC = rs` |
 | 0001 | CALL | Push return address and jump |
 | 0010 | RET | Return from subroutine |
 | 0011 | HALT | Stop execution |
@@ -191,7 +191,7 @@ if the condition is true.
 ```text
 SP = SP - 2
 MEM[SP] = PC + 2
-PC = rd
+PC = rs
 ```
 
 ## RET
@@ -205,7 +205,7 @@ SP = SP + 2
 
 ```text
 SP = SP - 2
-MEM[SP] = rd
+MEM[SP] = rs
 ```
 
 ## POP
