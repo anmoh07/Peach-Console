@@ -115,7 +115,7 @@ rd = MEM[rs + sign_extend(imm4)]
 
 ```text
 [15:12] [11:8] [7:4] [3:0]
-1 010    rd      rs      imm4
+1 010    imm4      rs      rs_data (rd)
 ```
 
 ## Semantics
@@ -132,7 +132,7 @@ MEM[rs + sign_extend(imm4)] = rd
 
 ```text
 [15:12] [11:8] [7:4] [3:0]
-opcode   rs1     rs2     off4
+opcode   off4     rs1     rs2
 ```
 
 | Opcode | Instruction | Condition |
