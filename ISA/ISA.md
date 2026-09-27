@@ -121,7 +121,7 @@ rd = MEM[rs + sign_extend(imm4)]
 ## Semantics
 
 ```text
-MEM[rs + sign_extend(imm4)] = rs
+MEM[rs + sign_extend(imm4)] = rs_data (rd)
 ```
 
 ---
