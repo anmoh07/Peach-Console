@@ -69,6 +69,8 @@ typedef enum logic [1:0]
 
 } cpu_state_t;
 
+cpu_state_t cpu_state;
+
 	pc pc_inst
 	(	
 
@@ -162,7 +164,7 @@ else if (pc_select == 2'b10)
 else
 	next_pc = branch_pc_out;
 
-if (cpu_state == MEM_ACCESS)
+if (cpu_state == MEM_OR_EXECUTE)
 begin
 
 	if (data_mem_read_write_address)
@@ -187,7 +189,7 @@ begin
 	rng_en = 1'b0;;
 
 end
-else if (cpu_state == MEM_ACCESS)
+else if (cpu_state == MEM_OR_EXECUTE)
 begin
 
 	dm_write_en = dm_write;
@@ -196,13 +198,22 @@ begin
 	rng_en = 1'b0;
 
 end
-else
+else if (cpu_state == WRITEBACK_PC_UPDATE)
 begin
 
 	dm_read_en = 1'b0;
 	dm_write_en = 1'b0;
 	sp_status = sp_status_cntr;
 	rng_en = rng_request;
+
+end
+else
+begin
+
+	dm_read_en = 1'b0;
+	dm_write_en = 1'b0;
+	sp_status = 2'b00;
+	rng_en = 1'b0;;
 
 end
 
