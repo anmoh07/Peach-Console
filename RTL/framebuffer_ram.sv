@@ -23,7 +23,7 @@ generate
         always_ff @(posedge clk) 
         begin
             
-           
+            //write if enable and mask only
             if (write_enable && write_mask[i]) 
             begin
 
@@ -31,7 +31,7 @@ generate
 
             end
 
-          
+            //if writing and reading the same thing (when writing allowed), return the new thing
             if (write_enable && (write_address == read_address) && write_mask[i]) 
             begin
 
@@ -41,7 +41,7 @@ generate
             else 
             begin
 
-                read_pixels[16*i +: 16] <= gpu_ram_bank[read_address]; 
+                read_pixels[16*i +: 16] <= gpu_ram_bank[read_address]; //Otherwise, always read from the register
 
             end
             
