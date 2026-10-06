@@ -6,8 +6,9 @@ module framebuffer_ram
     	input logic [10:0] write_address,
     	input logic [255:0] write_pixels,
     	input logic [15:0] write_mask,
-
-        input  logic [10:0]  read_address,
+   
+        input logic read_enable,
+        input logic [10:0]  read_address,
     	output logic [255:0] read_pixels
 
 
@@ -32,16 +33,16 @@ generate
             end
 
             //if writing and reading the same thing (when writing allowed), return the new thing
-            if (write_enable && (write_address == read_address) && write_mask[i]) 
+            if (write_enable && (write_address == read_address) && write_mask[i] && read_enable) 
             begin
 
                 read_pixels[16*i +: 16] <= write_pixels[16*i +: 16]; 
 
             end 
-            else 
+            else if (read_enable)
             begin
 
-                read_pixels[16*i +: 16] <= gpu_ram_bank[read_address]; //Otherwise, always read from the register
+                read_pixels[16*i +: 16] <= gpu_ram_bank[read_address]; //Otherwise, always read from the ram
 
             end
             
