@@ -1,7 +1,8 @@
 module framebuffer_ram
 (
 
-        input logic clk,
+        input logic read_clk,
+        input logic write_clk,
         input logic write_enable,
     	input logic [10:0] write_address,
     	input logic [255:0] write_pixels,
@@ -21,7 +22,7 @@ generate
    
         logic [15:0] gpu_ram_bank [0:1295];
 
-        always_ff @(posedge clk) 
+        always_ff @(posedge write_clk) 
         begin
             
             //write if enable and mask only
@@ -31,18 +32,16 @@ generate
                 gpu_ram_bank[write_address] <= write_pixels[16*i +: 16];
 
             end
+        
+        end
 
-            //if writing and reading the same thing (when writing allowed), return the new thing
-            if (write_enable && (write_address == read_address) && write_mask[i] && read_enable) 
+        always_ff @(posedge read_clk)
+        begin
+
+            if (read_enable)
             begin
 
-                read_pixels[16*i +: 16] <= write_pixels[16*i +: 16]; 
-
-            end 
-            else if (read_enable)
-            begin
-
-                read_pixels[16*i +: 16] <= gpu_ram_bank[read_address]; //Otherwise, always read from the ram
+                read_pixels[16*i +: 16] <= gpu_ram_bank[read_address]; //Always read from the ram
 
             end
             
