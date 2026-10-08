@@ -1,7 +1,8 @@
+
 module video_scanout 
 (
 
-    input logic clk,
+    input logic pixel_clk,
 
     input logic [7:0] x,
     input logic [6:0] y,
