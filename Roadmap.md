@@ -25,9 +25,9 @@ Games
 | Component                       | Status      |
 | ------------------------------- | ----------- |
 | ISA Design (100%)               | Complete    |
-| Software Emulator (75%)         | In progress |
-| RTL Implementation (40%)        | In progress |
-| Assembler (10%)                 | In progress |
+| Software Emulator (100%)        | Complete    |
+| RTL Implementation (100%)       | Complete    |
+| Assembler (100%)                | Complete    |
 | Compiler (30%)                  | In progress |
 | Operating System (0%)           | Not started |
 | Software Library Creation (0%)  | Not started |
@@ -39,25 +39,15 @@ Games
 
 ## Software Emulator
 
-**Status:** In progress
-
-* Base CPU Model: Complete
-* Controller and GPU Module: Not started
+**Status:** Complete
 
 ## RTL Implementation
 
-**Status:** In progress
-
-* Base CPU Model: Complete
-* Controller Module: In progress
-* Mini GPU: In progress
-* Pipelined Implementation: In progress
+**Status:** Complete
 
 ## Assembler
 
-**Status:** In progress
-
-* No formal plan yet
+**Status:** Complete
 
 ## Compiler
 
