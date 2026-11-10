@@ -10,10 +10,12 @@ typedef enum
 
 
     TOKEN_KW_INT,
+    TOKEN_KW_UNSIGNED,
     TOKEN_KW_IF,
     TOKEN_KW_ELSE,
     TOKEN_KW_WHILE,
     TOKEN_KW_RETURN,
+    TOKEN_KW_STRUCT,
 
 
     //Arithmetic Operators
@@ -29,13 +31,22 @@ typedef enum
 
     //Operators
 
-
-    TOKEN_EQUALITY,
-    TOKEN_NOT_EQUAL,
-    TOKEN_LESS_THAN,
-    TOKEN_LESS_THAN_EQUAL_TO,
-    TOKEN_GREATER_THAN,
-    TOKEN_GREATER_THAN_EQUAL_TO,
+    TOKEN_EXCLAMATION, //!
+    TOKEN_EQUALITY, //==
+    TOKEN_NOT_EQUAL, //!=
+    TOKEN_LESS_THAN, //<
+    TOKEN_LESS_THAN_EQUAL_TO, //<=
+    TOKEN_GREATER_THAN, //>
+    TOKEN_GREATER_THAN_EQUAL_TO, //>=
+    TOKEN_AND, //&&
+    TOKEN_OR, //||
+    TOKEN_AND_BW, //for bitwise AND, and address of, &
+    TOKEN_OR_BW, // |
+    TOKEN_XOR_BW, //^
+    TOKEN_NOT_BW, //~
+    TOKEN_LEFT_SHIFT_BW, //<<
+    TOKEN_RIGHT_SHIFT_BW, //>>
+    TOKEN_DOT, //.
 
 
     //Punctuation
@@ -60,15 +71,13 @@ typedef enum
 
 } token_type; //Types of tokens classified in an enum
 
-
-
 typedef struct
 {
 
     token_type type;
     const char* start;
     unsigned long length;
-
+    int line;
 
 } token; //Defines a token with it's type, start in memory, and length
 
