@@ -148,11 +148,11 @@ For a variable right shift, prepare control = amount & 15 for logical mode, or c
 
 SHLI and SHRI use four-bit immediates (0–15). SHRI always shifts logically. There is no immediate arithmetic-right-shift instruction: load 16 + amount into a control register and use SHR.
 
-## Assembler pseudoinstructions
+## Assembler pseudoinstruction workarounds
 
-NOP, MOV, and NEG are assembler pseudoinstructions, each expanding to one native instruction:
+NOP, MOV, and NEG can be implemented using existing instruction:
 
-| Syntax | Expansion | Example | Hex |
+| Instruction | Expansion | Example | Hex |
 | :--- | :--- | :--- | :---: |
 | NOP | ADDI R0 R0 0 | NOP | 7000 |
 | MOV Rd Rs | ADDI Rd Rs 0 | MOV R3 R2 | 7320 |
