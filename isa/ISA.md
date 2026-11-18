@@ -41,7 +41,7 @@ For opcode 0xF, the remaining fields depend on the function. DIV uses function 0
 | `0xF` | `0x2` | `RET` | `F x 2 x` | `RET` | `F020` | PC = MEM16[SP]; SP += 1 |
 | `0xF` | `0x3` | `HALT` | `F x 3 x` | `HALT` | `F030` | Stop execution until reset |
 | `0xF` | `0x5` | `MUL Rb Rd` | `F d 5 b` | `MUL R2 R3` | `F352` | Rd = low16(unsigned product); upper 16 bits to MMIO 0x0001 |
-| `0xF` | `0x6` | `NOT Rd` | `F d 6 x` | `NOT R3` | `F360` | Rd = bitwise complement of Rd |
+| `0xF` | `0x6` | `XORI Rd imm4` | `F d 6 i` | `XORI R3 -1` | `F36F` | Rd = old_Rd XOR sign_extend16(imm4) |
 | `0xF` | `0x7` | `SHL Rd Rs` | `F d 7 s` | `SHL R3 R2` | `F372` | Rd = low16(old_Rd << (old_Rs & 15)); ignore Rs[15:4] |
 | `0xF` | `0x8` | `SHR Rd Rs` | `F d 8 s` | `SHR R3 R2` | `F382` | Shift old_Rd right by old_Rs[3:0]; old_Rs[4] selects logical (0) or arithmetic (1); ignore Rs[15:5] |
 | `0xF` | `0x9` | `PUSH Rs` | `F s 9 x` | `PUSH R1` | `F190` | SP -= 1; MEM16[SP] = original Rs |
@@ -76,6 +76,16 @@ POP R15 is illegal; no illegal-instruction trap is specified. POP R0 discards th
 ## Special instruction details
 
 To build an arbitrary 16-bit constant, load its upper byte with LOADI, shift left by 8 with SHLI, load the lower byte into a scratch register, and combine with OR.
+
+### Immediate XOR
+
+XORI Rd imm4 XORs the original destination value with the four-bit immediate sign-extended to 16 bits. Its immediate range is -8 to +7; it is not zero-extended. For example, 1 becomes 0x0001, 7 becomes 0x0007, -8 becomes 0xFFF8, and -1 becomes 0xFFFF. Results written to R0 are discarded as usual.
+
+```asm
+XORI R3 1    ; toggle bit 0 (0xF361)
+XORI R3 7    ; toggle bits 0 through 2 (0xF367)
+XORI R3 -1   ; invert all 16 bits (0xF36F)
+```
 
 ### Multiplication and division
 
@@ -157,6 +167,7 @@ NOP, MOV, and NEG can be implemented using existing instruction:
 | NOP | ADDI R0 R0 0 | NOP | 7000 |
 | MOV Rd Rs | ADDI Rd Rs 0 | MOV R3 R2 | 7320 |
 | NEG Rd | SUB Rd R0 Rd | NEG R3 | 1303 |
+| NOT Rd | XORI Rd -1 | NOT R3 | F36F |
 
 NOP has no dedicated native encoding; it expands to ADDI R0 R0 0 (0x7000), which discards the result and advances PC by one. ADD encodings with destination R0 are intended for possible future atomic instructions; their current behavior remains as specified by ADD until that extension is defined. Special functions 0x4, 0xB, and 0xE are reserved; MULH, RNG, and JMP_REL8 are no longer native instructions. LUI is no longer an instruction; function 0xF now encodes DIV. Build upper-byte constants with LOADI followed by SHLI, and combine a lower byte with OR when needed.
 
