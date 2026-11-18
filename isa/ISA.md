@@ -4,13 +4,13 @@ All 31 native instructions with readable operand syntax, the exact 16-bit encodi
 
 Read fields from left to right as bits [15:12], [11:8], [7:4], [3:0]. Each hex digit is four bits. d, a, b and s are register numbers 0–15; i is an immediate nibble. x marks an unused four-bit field: its value is a don't care. Literal digits such as 0 are required opcode or function bits. Hex examples use zero for unused fields as a convenient convention.
 
-Assembly syntax uses spaces between the mnemonic and operands, with no commas. LOAD uses `LOAD Rd Ra imm4` and STORE uses `STORE Ra imm4 Rb`; the base register and signed offset are separate operands without brackets or a plus sign. MUL uses `MUL Rb Rd`, with the destination last. Instructions with no operands are written as just the mnemonic, such as `NOP` or `HALT`.
+Assembly syntax uses spaces between the mnemonic and operands, with no commas. LOAD uses `LOAD Rd Ra imm4` and STORE uses `STORE Ra imm4 Rb`; the base register and signed offset are separate operands without brackets or a plus sign. MUL, MULH, and DIV use `MUL Rb Rd`, `MULH Rb Rd`, and `DIV Rb Rd`, with the destination last. Instructions with no operands are written as just the mnemonic, such as `NOP` or `HALT`.
 
 ## Instruction encoding
 
 Every instruction is 16 bits. The primary opcode is bits [15:12]. Opcodes 0x0 through 0xE identify instructions directly. Opcode 0xF selects the special group, where bits [7:4] are the function code. The tables below are in numeric opcode order, followed by numeric function-code order within opcode 0xF.
 
-For opcode 0xF, the remaining fields depend on the function. LUI uses function 0xF: its immediate is formed from the fixed high nibble F and the low nibble in [3:0], so its encodable immediate range is 0xF0–0xFF.
+For opcode 0xF, the remaining fields depend on the function. MULH uses function 0x4 and DIV uses function 0xF. Both use fields F d function b, with the source register written first and the destination register second in assembly syntax.
 
 ### Primary opcodes 0x0–0xE
 
@@ -40,7 +40,7 @@ For opcode 0xF, the remaining fields depend on the function. LUI uses function 0
 | `0xF` | `0x1` | `CALL Rb` | `F x 1 b` | `CALL R10` | `F01A` | SP -= 1; MEM16[SP] = PC + 1; PC = original Rb |
 | `0xF` | `0x2` | `RET` | `F x 2 x` | `RET` | `F020` | PC = MEM16[SP]; SP += 1 |
 | `0xF` | `0x3` | `HALT` | `F x 3 x` | `HALT` | `F030` | Stop execution until reset |
-| `0xF` | `0x4` | `NOP` | `F x 4 x` | `NOP` | `F040` | No architectural change except PC += 1 |
+| `0xF` | `0x4` | `MULH Rb Rd` | `F d 4 b` | `MULH R2 R3` | `F342` | Rd = high16(unsigned16(old_Rd) × unsigned16(old_Rb)) |
 | `0xF` | `0x5` | `MUL Rb Rd` | `F d 5 b` | `MUL R2 R3` | `F352` | Rd = low16(Rd × Rb) |
 | `0xF` | `0x6` | `NOT Rd` | `F d 6 x` | `NOT R3` | `F360` | Rd = bitwise complement of Rd |
 | `0xF` | `0x7` | `SHL Rd Rs` | `F d 7 s` | `SHL R3 R2` | `F372` | Rd = low16(old_Rd << (old_Rs & 15)); ignore Rs[15:4] |
@@ -51,7 +51,7 @@ For opcode 0xF, the remaining fields depend on the function. LUI uses function 0
 | `0xF` | `0xC` | `SHLI Rd imm4` | `F d C i` | `SHLI R3 8` | `F3C8` | Rd = Rd << unsigned imm4 |
 | `0xF` | `0xD` | `SHRI Rd imm4` | `F d D i` | `SHRI R3 8` | `F3D8` | Rd = Rd >> unsigned imm4; logical zero fill |
 | `0xF` | `0xE` | `JMP_REL8 off8` | `F hi E lo` | `JMP_REL8 -2` | `FFEE` | PC = PC + 1 + signed off8 |
-| `0xF` | `0xF` | `LUI Rd imm8` | `F d F i` | `LUI R3 0xF0` | `F3F0` | Rd = imm8 << 8; only F0–FF encodes LUI |
+| `0xF` | `0xF` | `DIV Rb Rd` | `F d F b` | `DIV R2 R3` | `F3F2` | Unsigned quotient to Rd; remainder to MMIO 0x0001; see division rules |
 ## Registers, memory, and execution
 
 R0 always reads as zero and ignores writes. R15 is SP; initialize it before stack use. Registers, instructions, and memory words are 16 bits. Arithmetic results keep the low 16 bits.
@@ -60,7 +60,7 @@ Memory is word-addressed: each address identifies one 16-bit word. Consecutive a
 
 Signed imm4 ranges from -8 to +7 for ADDI, LOAD, and STORE. LOADI accepts 0–255 and zero-extends the value. SHLI and SHRI use unsigned immediate amounts 0–15. STORE places its immediate in [11:8], not the low nibble.
 
-MUL, NOT, SHL, SHR, SHLI, and SHRI read the old destination value as an input. MUL uses syntax MUL Rb Rd, with the destination second; NOT, SHL, SHR, SHLI, and SHRI place the destination first. All sources are read before the destination is written, including when operands alias.
+MUL, MULH, DIV, NOT, SHL, SHR, SHLI, and SHRI read the old destination value as an input. MUL, MULH, and DIV place the destination second; NOT, SHL, SHR, SHLI, and SHRI place the destination first. All sources are read before the destination is written, including when operands alias.
 
 ## Branches, jumps, and stack
 
@@ -80,9 +80,32 @@ POP R15 is illegal; no illegal-instruction trap is specified. POP R0 discards th
 
 RNG resets to 0xACE1 and returns 0xACE1, 0x5670, 0xAB38, … on successive requests. RNG R0 discards the result but still advances the generator.
 
-LUI accepts only immediates 0xF0–0xFF. Its function nibble is fixed at F; the immediate's low nibble occupies [3:0]. For example, LUI R3 0xF0 encodes as F3F0. F312 is CALL R2 not LUI R3 0x12.
+
 
 To build an arbitrary 16-bit constant, load its upper byte with LOADI, shift left by 8 with SHLI, load the lower byte into a scratch register, and combine with OR.
+
+### Multiplication and division
+
+MUL writes the low 16 bits of the product. MULH writes bits [31:16] of the full unsigned 16-by-16-bit product. Both read the original source and destination values before writing; operands may alias. MULH does not modify the remainder register. For example, 0xFFFF × 0x0002 produces low half 0xFFFE and unsigned high half 0x0001.
+
+DIV Rb Rd interprets old_Rd as the unsigned dividend and old_Rb as the unsigned divisor. For a nonzero divisor, it writes floor(dividend / divisor) to Rd and dividend % divisor to the dedicated remainder register at MMIO word address 0x0001. Both results become architecturally visible when the instruction completes. DIV may take multiple clock cycles; its latency is implementation-defined. PC then advances by one word.
+
+Division by zero writes 0xFFFF to Rd and the original dividend to the remainder register, without a trap. DIV targeting R0 discards the quotient but still updates the remainder. If Rb and Rd alias, both inputs use the original register value. R15 is an ordinary allowed destination and therefore changes SP when written.
+
+### Memory-mapped registers
+
+| Word address | Register | Read behavior | Write behavior |
+| :---: | :--- | :--- | :--- |
+| `0x0000` | Controller state | Returns current controller state; button bit assignments are platform-defined | Ignored |
+| `0x0001` | Division remainder | Returns the remainder from the most recently completed DIV | Ignored |
+
+These addresses are MMIO rather than ordinary data RAM. The remainder register resets to 0x0000. Reading it does not clear or otherwise change it. Every DIV overwrites it, including division by zero and DIV targeting R0. Save a needed remainder before another DIV; any future interrupt/context-switch convention must account for this state.
+
+```asm
+LOAD R1 R0 0   ; read controller state (0x9100)
+DIV R2 R3      ; R3 = unsigned quotient (0xF3F2)
+LOAD R4 R0 1   ; R4 = remainder (0x9401)
+```
 
 ## Encoding examples
 
@@ -127,11 +150,17 @@ SHLI and SHRI use four-bit immediates (0–15). SHRI always shifts logically. Th
 
 ## Assembler pseudoinstructions
 
-MOV and NEG are assembler pseudoinstructions, each expanding to one native instruction:
+NOP, MOV, and NEG are assembler pseudoinstructions, each expanding to one native instruction:
 
 | Syntax | Expansion | Example | Hex |
 | :--- | :--- | :--- | :---: |
+| NOP | ADD R0 R0 R0 | NOP | 0000 |
 | MOV Rd Rs | ADDI Rd Rs 0 | MOV R3 R2 | 7320 |
 | NEG Rd | SUB Rd R0 Rd | NEG R3 | 1303 |
 
+NOP has no dedicated native encoding; it advances PC by one through ADD R0 R0 R0. Function 0x4 now encodes MULH. LUI is no longer an instruction; function 0xF now encodes DIV. Build upper-byte constants with LOADI followed by SHLI, and combine a lower byte with OR when needed.
+
 Negation wraps modulo 65536, including 0x8000 -> 0x8000.
+
+
+
