@@ -57,7 +57,7 @@ Memory is word-addressed: each address identifies one 16-bit word. Consecutive a
 
 Signed imm4 ranges from -8 to +7 for ADDI, LOAD, and STORE. LOADI accepts 0–255 and zero-extends the value. SHLI and SHRI use unsigned immediate amounts 0–15. STORE places its immediate in [11:8], not the low nibble.
 
-MUL, DIV, NOT, SHL, SHR, SHLI, and SHRI read the old destination value as an input. MUL and DIV place the destination second; NOT, SHL, SHR, SHLI, and SHRI place the destination first. All sources are read before the destination is written, including when operands alias.
+MUL, DIV, XORI, SHL, SHR, SHLI, and SHRI read the old destination value as an input. MUL and DIV place the destination second; XORI, SHL, SHR, SHLI, and SHRI place the destination first. All sources are read before the destination is written, including when operands alias.
 
 ## Branches, jumps, and stack
 
