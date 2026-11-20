@@ -24,7 +24,7 @@ For opcode 0xF, the remaining fields depend on the function. DIV uses function 0
 | `0x5` | `SLT Rd Ra Rb` | `5 d a b` | `SLT R3 R1 R2` | `5312` | Rd = 1 if signed16(Ra) < signed16(Rb), otherwise 0 |
 | `0x6` | `SLTU Rd Ra Rb` | `6 d a b` | `SLTU R3 R1 R2` | `6312` | Rd = 1 if unsigned16(Ra) < unsigned16(Rb), otherwise 0 |
 | `0x7` | `ADDI Rd Ra imm4` | `7 d a i` | `ADDI R3 R1 -1` | `731F` | Rd = Ra + signed imm4 |
-| `0x8` | `LOADI Rd imm8` | `8 d imm8` | `LOADI R3 0xFF` | `83FF` | Rd = zero-extended imm8 |
+| `0x8` | `LOADI Rd imm8` | `8 d imm8` | `LOADI R3 255` | `83FF` | Rd = zero-extended imm8 |
 | `0x9` | `LOAD Rd Ra imm4` | `9 d a i` | `LOAD R3 R1 -2` | `931E` | Rd = MEM16[Ra + signed imm4] |
 | `0xA` | `STORE Ra imm4 Rb` | `A i a b` | `STORE R1 2 R3` | `A213` | MEM16[Ra + signed imm4] = Rb |
 | `0xB` | `BEQ Ra Rb off4` | `B i a b` | `BEQ R1 R2 -1` | `BF12` | Branch if Ra == Rb |
