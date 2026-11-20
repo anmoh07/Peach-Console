@@ -93,7 +93,7 @@ MUL Rb Rd calculates the full unsigned 16-by-16-bit product using the original R
 
 DIV Rb Rd interprets old_Rd as the unsigned dividend and old_Rb as the unsigned divisor. For a nonzero divisor, it writes floor(dividend / divisor) to Rd and dividend % divisor to the dedicated remainder register at MMIO word address 0x0002. Both results become architecturally visible when the instruction completes. DIV may take multiple clock cycles; its latency is implementation-defined. PC then advances by one word.
 
-Division by zero writes 0xFFFF to Rd and the original dividend to the remainder register, without a trap. DIV targeting R0 discards the quotient but still updates the remainder. If Rb and Rd alias, both inputs use the original register value. R15 is an ordinary allowed destination and therefore changes SP when written.
+Division by zero writes 0x0000 to Rd and 0x0000 to the remainder register, without a trap. DIV targeting R0 discards the quotient but still updates the remainder. If Rb and Rd alias, both inputs use the original register value. R15 is an ordinary allowed destination and therefore changes SP when written.
 
 ### Memory-mapped registers
 
