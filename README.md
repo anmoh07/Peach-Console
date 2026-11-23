@@ -1,6 +1,6 @@
 # Peach Console
 
-Peach Console is a custom FPGA-targeted 16-bit game console architecture featuring a custom ISA, C-based emulator, MMIO subsystem, and fixed-function graphics hardware for 2D games.
+Peach Console is a custom FPGA-targeted 16-bit game console architecture featuring a custom ISA, C-based emulator, MMIO subsystem, and fixed-function graphics hardware for 2D and 3D games.
 
 ## Features
 
